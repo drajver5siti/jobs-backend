@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const { createJwt } = require("../../middleware/jwt");
+const Job = require("../../models/Job");
 
 const User = require('../user/../../models/User');
 
@@ -65,7 +66,28 @@ const loginUser = async (req, res, next) => {
 
 const getJobs = async (req, res, next) => {
     const { keyword, location } = req.query;
-    res.status(200).json(`${keyword} and ${location}`);
+    console.log(`Get jobs with ${location}`)
+    const resp = await Job.find({ location: location })
+    res.status(200).json([...resp]);
+}
+
+const addJob = async (req, res, next) => {
+    const { title, company, location, description, type, shortDesc } = req.body;
+    if (!title || !company || !location || !description || !shortDesc)
+        return res.status(400).json('Invalid input')
+    try {
+        const newJob = await Job.create({
+            title,
+            company,
+            location,
+            description,
+            shortDesc,
+            type,
+        })
+        return res.status(200).json(newJob);
+    } catch (error) {
+        return res.status(500).json(error);
+    }
 }
 
 module.exports = {
@@ -73,4 +95,5 @@ module.exports = {
     registerUser,
     loginUser,
     getJobs,
+    addJob
 }
