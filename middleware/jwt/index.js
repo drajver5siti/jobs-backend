@@ -15,13 +15,13 @@ const decodeToken = (token) => {
 const jwtInterceptor = (req, res, next) => {
     const user = req.headers.authorization;
     if (!user)
-        return res.status(400).json("Auth token not found")
+        return res.status(400).json({ message: "Auth token not found" });
 
     const [bearer, jwtToken] = user.split(" ");
     try {
         verifyJwt(jwtToken);
     } catch (error) {
-        return res.status(401).json(`Invalid jwt`);
+        return res.status(401).json({ message: `Invalid jwt` });
     }
     next();
 }
